@@ -3,7 +3,6 @@
 ### Files
 
 - `s3.tf` -> handles creation of s3 bucket for tf state
-- `dynamodb.tf` -> handles creation of dynamodb for tf state
 - `main.tf` -> aws resource creation
 
 ### Commands

@@ -1,22 +1,13 @@
-# create s3 bucket to hold all state for now
-resource "aws_s3_bucket" "terraform_state_bucket" {
-  # for_each = var.env
-  bucket = "my-test-generic-tf-state-bucket"
+resource "aws_s3_bucket" "test_bucket" {
+  bucket = "lambda-event-notify-test-bucket"
 }
 
-resource "aws_s3_bucket_versioning" "terraform_state_bucket_versioning" {
-  bucket = aws_s3_bucket.terraform_state_bucket.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+resource "aws_s3_bucket_notification" "test_bucket_notification" {
+  bucket = aws_s3_bucket.test_bucket.id
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_bucket_sse" {
-  bucket = aws_s3_bucket.terraform_state_bucket.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
+  // include filter prefix's and suffix's to narrow down files
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.test_lambda.arn
+    events              = ["s3:ObjectCreated:*"]
   }
 }
