@@ -10,7 +10,8 @@ resource "aws_lambda_function" "test_lambda" {
   role          = aws_iam_role.test_lambda_role.arn
   handler       = "main.handler"
   runtime       = "python3.12"
-  depends_on    = [aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role]
+  timeout       = 10
+  depends_on    = [aws_iam_role_policy_attachment.attach_base_lambda_policy_to_iam_role]
 }
 
 resource "aws_lambda_permission" "s3-lambda-permission" {
