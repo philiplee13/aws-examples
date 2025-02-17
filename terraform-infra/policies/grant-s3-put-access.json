@@ -5,7 +5,7 @@
       "Sid": "grants3putaccess",
       "Action": ["s3:PutObject", "s3:ListBucket", "s3:GetObject"],
       "Effect": "Allow",
-      "Resource": ["arn:aws:s3:::lambda-event-put-test-bucket/*"]
+      "Resource": ["arn:aws:s3:::${bucketName}/*"]
     }
   ]
 }

@@ -24,12 +24,15 @@ resource "aws_iam_policy" "test_lambda_iam_policy" {
   description = "AWS IAM Policy for managing aws lambda role"
   policy      = file("policies/lambda-policy.json")
 }
+
 resource "aws_iam_policy" "test_lambda_s3_put_policy" {
 
   name        = "test-lambda-s3-put-iam-policy"
   path        = "/"
   description = "AWS IAM Policy for putting files into s3"
-  policy      = file("policies/grant-s3-put-access.json")
+  policy = templatefile("policies/grant-s3-put-access.json", {
+    bucketName = aws_s3_bucket.test_put_bucket.bucket
+  })
 }
 resource "aws_iam_policy" "test_lambda_s3_get_policy" {
 
