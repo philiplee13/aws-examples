@@ -22,3 +22,7 @@
     - then you'll need to migrate the appropriate resources `terraform state mv...`
     - then run terraform plan to make sure everything got migrated successfully
   - Or we can use [workspaces](https://developer.hashicorp.com/terraform/tutorials/modules/organize-configuration#separate-states)
+
+### Lambda based apis
+
+- https://www.reddit.com/r/aws/comments/173ybvv/should_you_use_a_lambda_monolith_aka_lambdalith/
