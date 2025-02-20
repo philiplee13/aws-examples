@@ -21,3 +21,11 @@ resource "aws_lambda_permission" "s3-lambda-permission" {
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.test_bucket.arn
 }
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.test_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.test_api.execution_arn}/*/*/*"
+}

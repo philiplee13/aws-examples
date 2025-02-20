@@ -5,7 +5,6 @@ def handler(event, context):
     message = "Hello world"
     print(f"event is {event}")
     details = event.get("Records", [])
-    print(f"details is {details[0]}")
     if details:
         print(f"triggered event is {details[0].get("eventName")}")
         print(f"file key is {details[0].get("s3").get("object").get("key")}")
@@ -21,3 +20,4 @@ def handler(event, context):
             "file-from-get-bucket.txt",
         )
         print("file uploaded")
+    return {"message": message}
