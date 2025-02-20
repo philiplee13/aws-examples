@@ -1,4 +1,4 @@
-
+// https://spacelift.io/blog/terraform-api-gateway
 resource "aws_api_gateway_rest_api" "test_api" {
   name        = "test-api"
   description = "test API Gateway"
