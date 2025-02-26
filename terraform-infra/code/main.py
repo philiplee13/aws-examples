@@ -4,6 +4,7 @@ import boto3
 def handler(event, context):
     message = "Hello world"
     print(f"event is {event}")
+    print("[ERROR]: to trigger cloudwatch alarm")
     details = event.get("Records", [])
     if details:
         print(f"triggered event is {details[0].get("eventName")}")
