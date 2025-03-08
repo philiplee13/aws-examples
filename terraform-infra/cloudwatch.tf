@@ -31,6 +31,33 @@ resource "aws_cloudwatch_log_metric_filter" "yada" {
 }
 
 resource "aws_cloudwatch_log_group" "custom_log_group" {
-  name = "testLambda"
+  name              = "testLambda"
+  retention_in_days = 1
 }
 
+
+// config for lambda terraform module
+resource "aws_cloudwatch_metric_alarm" "logging_metric_alarm" {
+  metric_name         = "Test Metric Alarm for Logging Lambda"
+  namespace           = "logging-lambda-metrics"
+  alarm_name          = "logging-lambda-error-rate"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  threshold           = 1
+  period              = 300 # 5 minutes
+  statistic           = "Sum"
+  alarm_description   = "Testing for errors in logging lambda"
+  treat_missing_data  = "missing"
+}
+
+resource "aws_cloudwatch_log_metric_filter" "logging_metric_filter" {
+  name           = "logging-lambda-error-count"
+  pattern        = "ERROR"
+  log_group_name = module.logging_lambda_func.lambda_cloudwatch_log_group_name
+
+  metric_transformation {
+    name      = "error-count-for-logging-lambda"
+    namespace = "logging-lambda-metrics"
+    value     = "1"
+  }
+}
