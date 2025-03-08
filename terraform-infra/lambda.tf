@@ -42,3 +42,28 @@ resource "aws_lambda_permission" "sns_permission" {
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.email_sns.arn
 }
+
+
+module "lambda_function" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "my-lambda1"
+  description   = "My awesome lambda function"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.12"
+
+  source_path = "code" # this renders out to be the root directory of the project -> so just go from there
+
+  attach_create_log_group_permission = false
+  use_existing_cloudwatch_log_group  = true
+
+  logging_log_group             = aws_cloudwatch_log_group.custom_log_group.name
+  logging_log_format            = "Text"
+  logging_application_log_level = "INFO"
+  depends_on = [
+    aws_cloudwatch_log_group.custom_log_group
+  ]
+  tags = {
+    Name = "my-lambda1"
+  }
+}
