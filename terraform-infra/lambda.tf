@@ -59,8 +59,9 @@ module "logging_lambda_func" {
   source_path = "logging-code" # this renders out to be the root directory of the project -> so just go from there
 
 
-  logging_log_format            = "JSON"
-  logging_application_log_level = "INFO"
+  logging_log_format                = "JSON"
+  logging_application_log_level     = "INFO"
+  cloudwatch_logs_retention_in_days = 90 # 3 month retention
   tags = {
     Name = "logging-lambda"
   }
