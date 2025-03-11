@@ -62,7 +62,24 @@ module "logging_lambda_func" {
   logging_log_format                = "JSON"
   logging_application_log_level     = "INFO"
   cloudwatch_logs_retention_in_days = 90 # 3 month retention
+
+  layers     = [module.lambda_layer_local.lambda_layer_arn]
+  depends_on = [module.lambda_layer_local]
   tags = {
     Name = "logging-lambda"
   }
 }
+
+module "lambda_layer_local" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  create_layer = true
+
+  layer_name               = "lambda-layer-local"
+  description              = "local lambda layer"
+  compatible_runtimes      = ["python3.12"]
+  compatible_architectures = ["arm64"]
+
+  source_path = "layers"
+}
+
