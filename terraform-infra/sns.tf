@@ -5,6 +5,6 @@ resource "aws_sns_topic" "email_sns" {
 resource "aws_sns_topic_subscription" "lambda_subscription" {
   topic_arn  = aws_sns_topic.email_sns.arn
   protocol   = "email"
-  endpoint   = "email-goes-here"
-  depends_on = [aws_lambda_function.test_lambda]
+  endpoint   = "leephilip303@gmail.com"
+  depends_on = [module.logging_lambda_func]
 }

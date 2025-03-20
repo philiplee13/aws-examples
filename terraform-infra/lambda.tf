@@ -63,23 +63,28 @@ module "logging_lambda_func" {
   logging_application_log_level     = "INFO"
   cloudwatch_logs_retention_in_days = 90 # 3 month retention
 
-  layers     = [module.lambda_layer_local.lambda_layer_arn]
-  depends_on = [module.lambda_layer_local]
   tags = {
     Name = "logging-lambda"
   }
 }
 
-module "lambda_layer_local" {
-  source = "terraform-aws-modules/lambda/aws"
-
-  create_layer = true
-
-  layer_name               = "lambda-layer-local"
-  description              = "local lambda layer"
-  compatible_runtimes      = ["python3.12"]
-  compatible_architectures = ["arm64"]
-
-  source_path = "layers"
+resource "aws_lambda_permission" "event_bridge_lambda_permission" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = module.logging_lambda_func.lambda_function_arn
+  principal     = "events.amazonaws.com"
+  source_arn    = module.eventbridge.eventbridge_rule_arns["s3_object_create"]
 }
 
+# module "lambda_layer_local" {
+#   source = "terraform-aws-modules/lambda/aws"
+
+#   create_layer = true
+
+#   layer_name               = "lambda-layer-local"
+#   description              = "local lambda layer"
+#   compatible_runtimes      = ["python3.12"]
+#   compatible_architectures = ["arm64"]
+
+#   source_path = "layers"
+# }
