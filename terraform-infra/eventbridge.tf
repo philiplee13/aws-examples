@@ -20,6 +20,22 @@ module "eventbridge" {
           }
         }
       })
+    },
+    custom_rule_schema = {
+      description = "test custom schema"
+      event_pattern = jsonencode({
+        "detail" : {
+          "bucket_name" : [{
+            "exists" : true
+          }],
+          "message" : [{
+            "exists" : true
+          }],
+          "result" : [{
+            "exists" : true
+          }]
+        }
+      })
     }
   }
 
@@ -32,6 +48,12 @@ module "eventbridge" {
       {
         name = "trigger-lambda"
         arn  = module.logging_lambda_func.lambda_function_arn
+      }
+    ],
+    custom_rule_schema = [
+      {
+        name = "event-bridge-custom-schema-logs"
+        arn  = aws_cloudwatch_log_group.event_bridge_log_group.arn
       }
     ]
   }
