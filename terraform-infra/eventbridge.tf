@@ -73,33 +73,24 @@ module "eventbridge" {
 }
 
 /**
-event is
+event for file drop is
 {
-    "version": "0",
-    "id": "",
-    "detail-type": "Object Created",
-    "source": "aws.s3",
-    "account": "",
-    "time": "2025-03-19T23:30:03Z",
-    "region": "us-east-1",
-    "resources": [
-        "arn:aws:s3:::bucketname"
-    ],
-    "detail": {
-        "version": "0",
-        "bucket": {
-            "name": ""
-        },
-        "object": {
-            "key": "",
-            "size": 110916,
-            "etag": "",
-            "sequencer": ""
-        },
-        "request-id": "",
-        "requester": "",
-        "source-ip-address": "",
-        "reason": "PutObject"
-    }
-}
+'version': '0',
+ 'id': '',
+  'detail-type': 'Object Created',
+   'source': 'aws.s3',
+    'account': '',
+     'time': '2025-03-21T22:30:34Z',
+      'region': 'us-east-1',
+       'resources': ['arn:aws:s3:::'],
+        'detail': {
+        'version': '0',
+         'bucket': {'name': ''},
+          'object': {
+          'key': 'test/test.txt',
+           'size': 0,
+            'etag': '',
+             'sequencer': ''},
+          }"
+
 */
