@@ -17,7 +17,11 @@ module "eventbridge" {
         "detail" : {
           "bucket" : {
             "name" : [aws_s3_bucket.test_bucket.id]
-          }
+          },
+          "object" : {
+            "key" : [{
+              "wildcard" : "test/*.txt"
+          }] }
         }
       })
     },
@@ -54,6 +58,10 @@ module "eventbridge" {
       {
         name = "event-bridge-custom-schema-logs"
         arn  = aws_cloudwatch_log_group.event_bridge_log_group.arn
+      },
+      {
+        name = "trigger-lambda-custom-schema"
+        arn  = module.logging_lambda_func.lambda_function_arn
       }
     ]
   }

@@ -68,12 +68,20 @@ module "logging_lambda_func" {
   }
 }
 
-resource "aws_lambda_permission" "event_bridge_lambda_permission" {
-  statement_id  = "AllowExecutionFromEventBridge"
+resource "aws_lambda_permission" "event_bridge_lambda_permission_s3_object_create_rule" {
+  statement_id  = "ExecutionFromEventBridgeS3Create"
   action        = "lambda:InvokeFunction"
   function_name = module.logging_lambda_func.lambda_function_arn
   principal     = "events.amazonaws.com"
   source_arn    = module.eventbridge.eventbridge_rule_arns["s3_object_create"]
+}
+
+resource "aws_lambda_permission" "event_bridge_lambda_permission_custom_schema_rule" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = module.logging_lambda_func.lambda_function_arn
+  principal     = "events.amazonaws.com"
+  source_arn    = module.eventbridge.eventbridge_rule_arns["custom_rule_schema"]
 }
 
 # module "lambda_layer_local" {
