@@ -59,10 +59,6 @@ module "eventbridge" {
         name = "event-bridge-logs"
         arn  = module.log_group.cloudwatch_log_group_arn
       },
-      {
-        name = "trigger-lambda"
-        arn  = module.logging_lambda_func.lambda_function_arn
-      }
     ],
     custom_rule_schema = [
       {
@@ -70,10 +66,6 @@ module "eventbridge" {
         arn  = module.log_group.cloudwatch_log_group_arn
       },
       // comment
-      {
-        name = "trigger-lambda-custom-schema"
-        arn  = module.logging_lambda_func.lambda_function_arn
-      }
     ]
   }
   depends_on = [module.log_group]

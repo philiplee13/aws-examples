@@ -1,18 +1,19 @@
-variable "test_key" {
-  default = {
-    key   = "test-key"
-    value = "test-value"
+module "secrets_manager" {
+  source = "terraform-aws-modules/secrets-manager/aws"
+
+  # Secret
+  name_prefix             = "example"
+  description             = "Example Secrets Manager secret"
+  recovery_window_in_days = 30
+
+
+  # Version
+  create_random_password           = true
+  random_password_length           = 64
+  random_password_override_special = "!@#$%^&*()_+"
+
+  tags = {
+    Environment = "Development"
+    Project     = "Example"
   }
-
-  type = map(string)
-}
-
-resource "aws_secretsmanager_secret" "test_secret" {
-  name                    = "test_secret_2"
-  recovery_window_in_days = 0
-}
-
-resource "aws_secretsmanager_secret_version" "test_secret_version" {
-  secret_id     = aws_secretsmanager_secret.test_secret.id
-  secret_string = jsonencode(var.test_key)
 }
