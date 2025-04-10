@@ -76,24 +76,33 @@ module "eventbridge" {
 }
 
 /**
-event for file drop is
+event for s3 file drop is
 {
-'version': '0',
- 'id': '',
-  'detail-type': 'Object Created',
-   'source': 'aws.s3',
-    'account': '',
-     'time': '2025-03-21T22:30:34Z',
-      'region': 'us-east-1',
-       'resources': ['arn:aws:s3:::'],
-        'detail': {
-        'version': '0',
-         'bucket': {'name': ''},
-          'object': {
-          'key': 'test/test.txt',
-           'size': 0,
-            'etag': '',
-             'sequencer': ''},
-          }"
-
+    "version": "0",
+    "id": "",
+    "detail-type": "Object Created",
+    "source": "aws.s3",
+    "account": "",
+    "time": "2025-04-10T16:17:46Z",
+    "region": "us-east-1",
+    "resources": [
+        "arn:aws:s3:::bucket-name"
+    ],
+    "detail": {
+        "version": "0",
+        "bucket": {
+            "name": "bucket-name"
+        },
+        "object": {
+            "key": "random.txt",
+            "size": 0,
+            "etag": "",
+            "sequencer": ""
+        },
+        "request-id": "",
+        "requester": "",
+        "source-ip-address": "",
+        "reason": "PutObject"
+    }
+}
 */
