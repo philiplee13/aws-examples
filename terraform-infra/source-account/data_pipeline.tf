@@ -234,7 +234,7 @@ resource "aws_kinesis_firehose_delivery_stream" "lambda_logs" {
       }
     }
 
-    prefix              = "function_name=!{partitionKeyFromQuery:function_name}/date=!{timestamp:yyyy}-!{timestamp:MM}-!{timestamp:dd}/"
+    prefix              = "function_name=!{partitionKeyFromQuery:function_name}/!{timestamp:yyyy}-!{timestamp:MM}-!{timestamp:dd}/"
     error_output_prefix = "errors/!{firehose:error-output-type}/"
 
     cloudwatch_logging_options {
@@ -342,7 +342,7 @@ def lambda_handler(event, context):
 
     # CloudWatch captures all `print()` statements as logEvents
     logger.info("🔥 Hello from test Lambda!") # shows as log
-    logger.info(json.dumps({"users_processed": 42})) # shows as metric
+    logger.info(json.dumps({"users_processed": "42"})) # shows as metric
     logger.info({"test": "value"}) # shows as log
 
     return {"status": "ok", "payload": payload}
@@ -409,7 +409,7 @@ def lambda_handler(event, context):
 
     # CloudWatch captures all `print()` statements as logEvents
     logger.info("hello from second lambda!") # shows as log
-    logger.info(json.dumps({"tickets_processed": 21})) # shows as metric
+    logger.info(json.dumps({"tickets_processed": "21"})) # shows as metric
     logger.info({"test from lambda 2": "value from lambda 22"}) # shows as log
 
     return {"status": "ok", "payload": payload}
@@ -473,15 +473,12 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
     "projection.enabled"              = "true"
     "projection.function_name.type"   = "enum"
     "projection.function_name.values" = "${aws_lambda_function.test_lambda.function_name},${aws_lambda_function.test_lambda_2.function_name}"
-    "projection.year.type"            = "integer"
-    "projection.year.range"           = "2025,2030"
-    "projection.month.type"           = "integer"
-    "projection.month.range"          = "01,12"
-    "projection.month.digits"         = "2"
-    "projection.day.type"             = "integer"
-    "projection.day.range"            = "01,31"
-    "projection.day.digits"           = "2"
-    "storage.location.template"       = "s3://${aws_s3_bucket.observability.bucket}/function_name=$${function_name}/date=$${year}-$${month}-$${day}/"
+    "projection.date.type"            = "date",
+    "projection.date.range"           = "2024-01-01,NOW",
+    "projection.date.format"          = "yyyy-MM-dd",
+    "projection.date.interval"        = "1",
+    "projection.date.interval.unit"   = "DAYS",
+    "storage.location.template"       = "s3://${aws_s3_bucket.observability.bucket}/function_name=$${function_name}/$${date}/"
   }
 
 
@@ -502,7 +499,7 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
 
     columns {
       name = "metrics"
-      type = "array<map<string:string>>"
+      type = "array<map<string,string>>"
     }
   }
 
