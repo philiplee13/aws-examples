@@ -234,7 +234,7 @@ resource "aws_kinesis_firehose_delivery_stream" "lambda_logs" {
       }
     }
 
-    prefix              = "function_name=!{partitionKeyFromQuery:function_name}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
+    prefix              = "function_name=!{partitionKeyFromQuery:function_name}/date=!{timestamp:yyyy}-!{timestamp:MM}-!{timestamp:dd}/"
     error_output_prefix = "errors/!{firehose:error-output-type}/"
 
     cloudwatch_logging_options {
@@ -280,6 +280,14 @@ resource "aws_iam_role_policy" "cwlogs_to_firehose_policy" {
 resource "aws_cloudwatch_log_subscription_filter" "lambda_logs" {
   name            = "lambda-to-firehose"
   log_group_name  = "/aws/lambda/MyTestFunction"
+  destination_arn = aws_kinesis_firehose_delivery_stream.lambda_logs.arn
+  role_arn        = aws_iam_role.cwlogs_to_firehose.arn
+  filter_pattern  = "" # empty = all logs
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "lambda_test_2_logs" {
+  name            = "lambda-to-firehose"
+  log_group_name  = "/aws/lambda/MyTestFunction2"
   destination_arn = aws_kinesis_firehose_delivery_stream.lambda_logs.arn
   role_arn        = aws_iam_role.cwlogs_to_firehose.arn
   filter_pattern  = "" # empty = all logs
@@ -346,7 +354,7 @@ EOF
 
 # Lambda function
 resource "aws_lambda_function" "test_lambda_2" {
-  function_name = "MyTestFunction"
+  function_name = "MyTestFunction2"
   role          = aws_iam_role.lambda_exec_2.arn
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"
@@ -355,7 +363,7 @@ resource "aws_lambda_function" "test_lambda_2" {
 
 # test lambda 2
 resource "aws_iam_role" "lambda_exec_2" {
-  name = "lambda_exec_role"
+  name = "lambda2_exec_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -425,6 +433,11 @@ resource "aws_cloudwatch_log_group" "example_log_group" {
   retention_in_days = 1
 }
 
+resource "aws_cloudwatch_log_group" "example_2_log_group" {
+  name              = "/aws/lambda/MyTestFunction2"
+  retention_in_days = 1
+}
+
 resource "aws_cloudwatch_log_group" "kinesis_log_group" {
   name              = "/aws/kinesisfirehose/lambda-logs"
   retention_in_days = 1
@@ -459,7 +472,7 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
   parameters = {
     "projection.enabled"              = "true"
     "projection.function_name.type"   = "enum"
-    "projection.function_name.values" = "${aws_lambda_function.test_lambda.function_name}"
+    "projection.function_name.values" = "${aws_lambda_function.test_lambda.function_name},${aws_lambda_function.test_lambda_2.function_name}"
     "projection.year.type"            = "integer"
     "projection.year.range"           = "2025,2030"
     "projection.month.type"           = "integer"
@@ -468,7 +481,7 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
     "projection.day.type"             = "integer"
     "projection.day.range"            = "01,31"
     "projection.day.digits"           = "2"
-    "storage.location.template"       = "s3://${aws_s3_bucket.observability.bucket}/function_name=$${function_name}/year=$${year}/month=$${month}/day=$${day}/"
+    "storage.location.template"       = "s3://${aws_s3_bucket.observability.bucket}/function_name=$${function_name}/date=$${year}-$${month}-$${day}/"
   }
 
 
@@ -489,7 +502,7 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
 
     columns {
       name = "metrics"
-      type = "array<struct<string:int>>"
+      type = "array<map<string:string>>"
     }
   }
 
@@ -499,17 +512,7 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
   }
 
   partition_keys {
-    name = "year"
-    type = "string"
-  }
-
-  partition_keys {
-    name = "month"
-    type = "string"
-  }
-
-  partition_keys {
-    name = "day"
+    name = "date"
     type = "string"
   }
 }
