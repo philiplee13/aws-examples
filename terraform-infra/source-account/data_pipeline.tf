@@ -494,12 +494,12 @@ resource "aws_glue_catalog_table" "lambda_logs_table" {
 
     columns {
       name = "logs"
-      type = "array<struct<message:string,timestamp:bigint>>"
+      type = "string"
     }
 
     columns {
       name = "metrics"
-      type = "array<map<string,string>>"
+      type = "string"
     }
   }
 
